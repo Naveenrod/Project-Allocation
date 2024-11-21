@@ -102,7 +102,7 @@ class UserSeeder extends Seeder
         ]);
 
         $partner = User::create([
-            'name' => 'Canva',
+            'name' => 'canva',
             'email' => 'canva@mail.com',
             'password' => Hash::make('12345678'),
             'usertype' => 'industry_partner',
