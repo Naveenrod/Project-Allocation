@@ -25,7 +25,14 @@ class Project extends Model
 
     public function applicants()
     {
-        return $this->belongsToMany(Student::class, 'student_project')->withPivot('justification')->withTimestamps();
+        return $this->belongsToMany(Student::class, 'student_project')->withPivot('justification', 'assigned')->withTimestamps();
+    }
+
+    public function assignedStudents()
+    {
+        return $this->belongsToMany(Student::class, 'student_project')
+                    ->wherePivot('assigned', true)
+                    ->withPivot('justification');
     }
 
     public function files()

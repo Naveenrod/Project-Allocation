@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
@@ -12,119 +11,70 @@ use App\Models\IndustryPartner;
 
 class UserSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        // Seed a student
-        $student = User::create([
-            'name' => 'Tom',
-            'email' => 'T@mail.com',
-            'password' => Hash::make('12345678'),
-            'usertype' => 'student',
-        ]);
+        // Students — varied GPAs so auto-assign ordering is visible
+        $students = [
+            ['name' => 'Tom',   'email' => 'T@mail.com',     'gpa' => 5.5, 'roles' => ['Frontend Developer', 'Backend Developer']],
+            ['name' => 'Alice', 'email' => 'alice@mail.com', 'gpa' => 6.5, 'roles' => ['Frontend Developer', 'UI/UX Designer']],
+            ['name' => 'Bob',   'email' => 'bob@mail.com',   'gpa' => 4.0, 'roles' => ['Backend Developer', 'Database Administrator']],
+            ['name' => 'Carol', 'email' => 'carol@mail.com', 'gpa' => 5.0, 'roles' => ['Frontend Developer', 'Backend Developer']],
+            ['name' => 'David', 'email' => 'david@mail.com', 'gpa' => 3.5, 'roles' => ['Database Administrator']],
+            ['name' => 'Emma',  'email' => 'emma@mail.com',  'gpa' => 6.0, 'roles' => ['Backend Developer', 'Data Scientist']],
+        ];
 
-        // populate the students table
+        foreach ($students as $data) {
+            $user = User::create([
+                'name'     => $data['name'],
+                'email'    => $data['email'],
+                'password' => Hash::make('12345678'),
+                'usertype' => 'student',
+            ]);
+            Student::create([
+                'user_id' => $user->id,
+                'name'    => $user->name,
+                'email'   => $user->email,
+                'gpa'     => $data['gpa'],
+                'roles'   => $data['roles'],
+            ]);
+        }
 
-        Student::create([
-            'user_id' => $student->id,
-            'name' => $student->name,
-            'email' => $student->email,
-            'gpa' => 0.0,
-        ]);
+        // Industry Partners — first three approved so they can post projects
+        $partners = [
+            ['name' => 'Medi Care',          'email' => 'medicare@mail.com', 'approved' => true],
+            ['name' => 'My Gov',             'email' => 'mygov@mail.com',    'approved' => true],
+            ['name' => 'Tank Stream Design', 'email' => 'TSD@mail.com',      'approved' => true],
+            ['name' => 'LSKD',               'email' => 'lskd@mail.com',     'approved' => false],
+            ['name' => 'AirTasker',          'email' => 'air@mail.com',      'approved' => false],
+            ['name' => 'Canva',              'email' => 'canva@mail.com',    'approved' => false],
+        ];
 
-        // Seed InP
-        $partner = User::create([
-            'name' => 'Medi Care',
-            'email' => 'medicare@mail.com',
-            'password' => Hash::make('12345678'),
-            'usertype' => 'industry_partner',
-        ]);
+        foreach ($partners as $data) {
+            $user = User::create([
+                'name'     => $data['name'],
+                'email'    => $data['email'],
+                'password' => Hash::make('12345678'),
+                'usertype' => 'industry_partner',
+            ]);
+            IndustryPartner::create([
+                'user_id'  => $user->id,
+                'name'     => $user->name,
+                'email'    => $user->email,
+                'approved' => $data['approved'],
+            ]);
+        }
 
-        // Automatically populate the industry_partners table
-        IndustryPartner::create([
-            'user_id' => $partner->id,
-            'name' => $partner->name,
-            'email' => $partner->email,
-        ]);
-
-        $partner = User::create([
-            'name' => 'My Gov',
-            'email' => 'mygov@mail.com',
-            'password' => Hash::make('12345678'),
-            'usertype' => 'industry_partner',
-        ]);
-
-        IndustryPartner::create([
-            'user_id' => $partner->id,
-            'name' => $partner->name,
-            'email' => $partner->email,
-        ]);
-
-        $partner = User::create([
-            'name' => 'Tank Stream Design',
-            'email' => 'TSD@mail.com',
-            'password' => Hash::make('12345678'),
-            'usertype' => 'industry_partner',
-        ]);
-
-        IndustryPartner::create([
-            'user_id' => $partner->id,
-            'name' => $partner->name,
-            'email' => $partner->email,
-        ]);
-
-        $partner = User::create([
-            'name' => 'LSKD',
-            'email' => 'lskd@mail.com',
-            'password' => Hash::make('12345678'),
-            'usertype' => 'industry_partner',
-        ]);
-
-        IndustryPartner::create([
-            'user_id' => $partner->id,
-            'name' => $partner->name,
-            'email' => $partner->email,
-        ]);
-
-        $partner = User::create([
-            'name' => 'AirTasker',
-            'email' => 'air@mail.com',
-            'password' => Hash::make('12345678'),
-            'usertype' => 'industry_partner', 
-        ]);
-
-        IndustryPartner::create([
-            'user_id' => $partner->id,
-            'name' => $partner->name,
-            'email' => $partner->email,
-        ]);
-
-        $partner = User::create([
-            'name' => 'canva',
-            'email' => 'canva@mail.com',
-            'password' => Hash::make('12345678'),
-            'usertype' => 'industry_partner',
-        ]);
-
-        IndustryPartner::create([
-            'user_id' => $partner->id,
-            'name' => $partner->name,
-            'email' => $partner->email,
-        ]);
-
+        // Teacher
         $teacher = User::create([
-            'name' => 'Garry',
-            'email' => 'garry@gmail.com',
+            'name'     => 'Garry',
+            'email'    => 'garry@gmail.com',
             'password' => Hash::make('12345678'),
             'usertype' => 'teacher',
         ]);
-
         Teacher::create([
             'user_id' => $teacher->id,
-            'name' => $teacher->name,
-            'email' => $teacher->email,
+            'name'    => $teacher->name,
+            'email'   => $teacher->email,
         ]);
     }
 }

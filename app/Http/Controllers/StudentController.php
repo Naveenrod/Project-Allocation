@@ -17,7 +17,7 @@ class StudentController extends Controller
      */
     public function index()
     {
-        $students = Student::all();
+        $students = Student::paginate(15);
         return view('student.list', compact('students'));
     }
 
@@ -26,7 +26,7 @@ class StudentController extends Controller
      */
     public function create()
     {
-        //
+        abort(404);
     }
 
     /**
@@ -34,7 +34,7 @@ class StudentController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        abort(404);
     }
 
     /**
@@ -57,11 +57,7 @@ class StudentController extends Controller
             return redirect()->back()->with('error', "No permission to modify another student's information.");
         }
 
-        // Decode the JSON-encoded roles data
-        $studentRoles = json_decode($student->roles);
-
-        // Ensure $studentRoles is an array or set it to an empty array (if not yet set)
-        $studentRoles = is_array($studentRoles) ? $studentRoles : [];
+        $studentRoles = $student->roles ?? [];
 
         return view('student.edit_form', compact('student', 'studentRoles'));
     }
@@ -78,14 +74,17 @@ class StudentController extends Controller
             'roles' => 'required|array',
         ]);
 
-        // Get the currently authenticated student
-        $student = Auth::user()->student;
+        // Ownership check — only the owning student (or teacher) may update
+        $student = Student::findOrFail($id);
+        if (auth()->user()->usertype === 'student' && auth()->user()->student->id !== $student->id) {
+            return redirect()->back()->with('error', 'No permission to modify another student\'s information.');
+        }
 
         // Update the GPA
         $student->gpa = $request->input('gpa');
 
-        // Update the roles and store them as JSON
-        $student->roles = json_encode($request->input('roles'));
+        // Roles cast as array by the model — no manual json_encode needed
+        $student->roles = $request->input('roles');
 
         $student->save();
 
@@ -98,6 +97,6 @@ class StudentController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        abort(404);
     }
 }

@@ -3,59 +3,75 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
 use App\Models\Student;
 use App\Models\Project;
+use Illuminate\Support\Facades\DB;
 
 class AutoAssignmentController extends Controller
 {
     public function autoAssign(Request $request)
     {
-        $year = $request->input('year');
+        $request->validate([
+            'year'      => 'required|integer',
+            'trimester' => 'required|integer|between:1,3',
+        ]);
+
+        $year      = $request->input('year');
         $trimester = $request->input('trimester');
 
-        // Retrieve students who have applied for projects in the selected offering
+        // Get all projects for this offering
+        $projects = Project::where('year', $year)
+            ->where('trimester', $trimester)
+            ->get();
+
+        if ($projects->isEmpty()) {
+            return redirect()->back()->with('error', 'No projects found for the selected offering.');
+        }
+
+        // Reset any previous assignments for this offering
+        DB::table('student_project')
+            ->whereIn('project_id', $projects->pluck('id'))
+            ->update(['assigned' => false]);
+
+        // Get all students who applied to projects in this offering, sorted by GPA descending
         $students = Student::whereHas('applications', function ($query) use ($year, $trimester) {
             $query->where('year', $year)->where('trimester', $trimester);
-        })->get();
+        })->orderByDesc('gpa')->get();
 
-        // Retrieve available projects in the selected offering
-        $projects = Project::where('year', $year)->where('trimester', $trimester)->get();
+        $assignedCount = 0;
 
-        // Assignment algorithm (simplified version)
-        foreach ($projects as $project) {
-            // Assignment condition A: Match students to roles
-            $projectRoles = $project->requiredRoles()->pluck('role_id');
-            $studentsByRole = $students->groupBy('role');
+        foreach ($students as $student) {
+            // Get the projects this student applied to in this offering, preserving application order
+            $appliedProjects = $student->applications()
+                ->where('year', $year)
+                ->where('trimester', $trimester)
+                ->orderBy('student_project.created_at')
+                ->get();
 
-            foreach ($projectRoles as $role) {
-                if ($studentsByRole->has($role)) {
-                    $student = $studentsByRole[$role]->pop();
-                    $project->assignStudent($student);
+            foreach ($appliedProjects as $project) {
+                $currentAssigned = $project->assignedStudents()->count();
+
+                if ($currentAssigned < $project->team_size) {
+                    // Assign this student to this project
+                    DB::table('student_project')
+                        ->where('student_id', $student->id)
+                        ->where('project_id', $project->id)
+                        ->update(['assigned' => true]);
+
+                    $assignedCount++;
+                    break; // Student is assigned — move to the next student
                 }
             }
-
-            // Assignment condition B: Sort students by GPA
-            $students = $students->sortByDesc('gpa');
-
-            // Assignment condition C: Match students based on team size
-            $teamSizeDiff = $project->teamSize - $project->assignedStudents->count();
-            $studentsForProject = $students->splice(0, $teamSizeDiff);
-            $project->assignStudents($studentsForProject);
-
-            // Assignment condition D: Match nominated students
-            $nominatedStudents = $students->filter(function ($student) use ($project) {
-                return $student->nominatedProject() === $project;
-            });
-
-            $project->assignStudents($nominatedStudents);
         }
 
-        // Save assignments to the database
-        foreach ($projects as $project) {
-            $project->save();
+        $totalStudents = $students->count();
+        $unassigned    = $totalStudents - $assignedCount;
+
+        $message = "Auto-assignment completed. {$assignedCount} of {$totalStudents} students assigned.";
+        if ($unassigned > 0) {
+            $message .= " {$unassigned} student(s) could not be assigned (all applied projects are at capacity).";
         }
 
-        return redirect()->back()->with('success', 'Auto-assignment completed.');
+        return redirect()->back()->with('success', $message);
     }
 }

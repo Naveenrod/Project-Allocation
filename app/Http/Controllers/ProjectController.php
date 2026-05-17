@@ -14,6 +14,7 @@ class ProjectController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
+        $this->middleware(['checkIfInP', 'checkApproval'])->only(['store', 'edit', 'update', 'destroy']);
     }
     /**
      * Display a listing of the resource.

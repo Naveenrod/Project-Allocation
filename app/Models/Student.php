@@ -17,6 +17,10 @@ class Student extends Model
         'roles',
     ];
 
+    protected $casts = [
+        'roles' => 'array',
+    ];
+
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -24,6 +28,13 @@ class Student extends Model
 
     public function applications()
     {
-        return $this->belongsToMany(Project::class, 'student_project')->withPivot('justification')->withTimestamps();
+        return $this->belongsToMany(Project::class, 'student_project')->withPivot('justification', 'assigned')->withTimestamps();
+    }
+
+    public function assignedProject()
+    {
+        return $this->belongsToMany(Project::class, 'student_project')
+                    ->wherePivot('assigned', true)
+                    ->withPivot('justification');
     }
 }
