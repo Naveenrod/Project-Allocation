@@ -16,7 +16,7 @@ class IndustryPartnerController extends Controller
      */
     public function index()
     {
-        $industryPartners = IndustryPartner::paginate(5);
+        $industryPartners = IndustryPartner::paginate(9);
         return view('index', compact('industryPartners'));
     }
 
