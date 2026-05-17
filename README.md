@@ -2,6 +2,9 @@
 
 A Laravel web application for managing Work Integrated Learning (WIL) project allocations between students, industry partners, and teachers at Griffith University.
 
+ <img width="1417" height="887" alt="image" src="https://github.com/user-attachments/assets/a283dcf7-0b3b-4a6a-b8ad-39bca9870937" />
+
+
 ---
 
 ## Overview
