@@ -8,6 +8,22 @@
         </div>
     </x-slot>
 
+    @if(session('success'))
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
+            <div class="rounded-lg bg-green-50 border border-green-200 px-5 py-4 text-sm text-green-800">
+                {{ session('success') }}
+            </div>
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
+            <div class="rounded-lg bg-red-50 border border-red-200 px-5 py-4 text-sm text-red-800">
+                {{ session('error') }}
+            </div>
+        </div>
+    @endif
+
     <div class="page-wrapper">
         <div class="grid gap-6 lg:grid-cols-3">
 
