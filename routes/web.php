@@ -20,22 +20,21 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::post('/auto-assign', [AutoAssignmentController::class, 'autoAssign'])->name('auto-assign');
-Route::resource('projects', AutoAssignmentController::class);
+Route::post('/auto-assign', [AutoAssignmentController::class, 'autoAssign'])->middleware(['auth', 'checkIfTeacher'])->name('auto-assign');
 
 Route::get('/', [IndustryPartnerController::class, 'index'])->name('home');
 Route::get('/industry-partners/approval-menu', [IndustryPartnerController::class, 'unapproved'])->middleware('checkIfTeacher')->name('industry-partners.unapproved');
-Route::put('/industry-partners/approve/{id}', [IndustryPartnerController::class, 'approve'])->name('industry-partners.approve');
+Route::put('/industry-partners/approve/{id}', [IndustryPartnerController::class, 'approve'])->middleware(['auth', 'checkIfTeacher'])->name('industry-partners.approve');
 Route::resource('industry-partners', IndustryPartnerController::class);
 
 Route::get('/create-project', [ProjectController::class, 'create'])->middleware('checkIfInP', 'checkApproval');
 Route::get('/projects/{id}/apply', [ProjectController::class, 'apply'])->middleware('checkIfStudent');
-Route::post('/application/{id}', [ProjectController::class, 'storeApplication']);
+Route::post('/application/{id}', [ProjectController::class, 'storeApplication'])->middleware(['auth', 'checkIfStudent']);
 Route::resource('projects', ProjectController::class);
 
 Route::get('students/{id}', [StudentController::class, 'show'])->middleware(['checkIfStudentOrTeacher'])->name('students.show');
-Route::resource('students', StudentController::class);
-Route::get('students/', [StudentController::class, 'index'])->middleware('checkIfTeacher')->name('students.index');
+Route::get('students', [StudentController::class, 'index'])->middleware(['auth', 'checkIfTeacher'])->name('students.index');
+Route::resource('students', StudentController::class)->except(['index']);
 
 
 Route::middleware('auth')->group(function () {
