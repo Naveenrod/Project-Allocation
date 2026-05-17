@@ -1,66 +1,181 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# WIL Project Allocation System
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A Laravel web application for managing Work Integrated Learning (WIL) project allocations between students, industry partners, and teachers at Griffith University.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Overview
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+The WIL Project Allocation System allows industry partners to post projects, students to apply, and teachers to run an automated GPA-based assignment algorithm that matches students to projects respecting team capacity limits.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## Features
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- **Industry Partners** — Register, post projects (with file/image attachments), and await teacher approval
+- **Students** — Browse projects, apply to up to 3 projects per offering, set GPA and skill roles
+- **Teachers** — Approve industry partners, view all students, and run auto-assignment
+- **Auto-Assignment** — GPA-sorted algorithm that assigns students to their highest-preference available project, respecting team size caps
+- **Quick Login** — Dev dropdown on the login page to switch between test accounts instantly
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+---
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## User Roles
 
-## Laravel Sponsors
+| Role | Capabilities |
+|---|---|
+| Student | View projects, apply (max 3), edit own profile (GPA + roles) |
+| Industry Partner | Create/edit/delete own projects, upload files |
+| Teacher | Approve industry partners, view all students, run auto-assign |
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+---
 
-### Premium Partners
+## Tech Stack
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+- **Backend** — PHP 8.4, Laravel 10
+- **Frontend** — Blade, Tailwind CSS, Alpine.js (via Laravel Breeze)
+- **Database** — MySQL
+- **Build** — Vite
 
-## Contributing
+---
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Requirements
 
-## Code of Conduct
+- PHP >= 8.1
+- Composer
+- Node.js & npm
+- MySQL
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+---
 
-## Security Vulnerabilities
+## Setup
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```bash
+# 1. Clone the repo
+git clone <repo-url>
+cd Project-Allocation-1
 
-## License
+# 2. Install PHP dependencies
+composer install
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+# 3. Install JS dependencies and build assets
+npm install && npm run build
+
+# 4. Copy environment file and generate app key
+cp .env.example .env
+php artisan key:generate
+
+# 5. Configure your database in .env
+#    DB_DATABASE=your_db
+#    DB_USERNAME=your_user
+#    DB_PASSWORD=your_password
+
+# 6. Run migrations and seed test data
+php artisan migrate:fresh --seed
+
+# 7. Link storage for file uploads
+php artisan storage:link
+
+# 8. Start the dev server
+php artisan serve
+```
+
+> **PHP 8.4 note:** Laravel 10 emits deprecation notices on PHP 8.4. These are suppressed via `php.ini` (`error_reporting = E_ALL & ~E_DEPRECATED & ~E_USER_DEPRECATED`) and the pre-load workaround in `artisan`. They do not affect functionality.
+
+---
+
+## Test Accounts
+
+All accounts use password: **`12345678`**
+
+A quick-login dropdown on the login page auto-fills any of these accounts.
+
+### Students
+
+| Name | Email | GPA |
+|---|---|---|
+| Alice | alice@mail.com | 6.5 |
+| Emma | emma@mail.com | 6.0 |
+| Tom | T@mail.com | 5.5 |
+| Carol | carol@mail.com | 5.0 |
+| Bob | bob@mail.com | 4.0 |
+| David | david@mail.com | 3.5 |
+
+### Teacher
+
+| Name | Email |
+|---|---|
+| Garry | garry@gmail.com |
+
+### Industry Partners
+
+| Name | Email | Status |
+|---|---|---|
+| Medi Care | medicare@mail.com | Approved |
+| My Gov | mygov@mail.com | Approved |
+| Tank Stream Design | TSD@mail.com | Approved |
+| LSKD | lskd@mail.com | Pending |
+| AirTasker | air@mail.com | Pending |
+| Canva | canva@mail.com | Pending |
+
+---
+
+## Seeded Projects (2026 Trimester 1)
+
+Pre-seeded with applications from all 6 students so auto-assign can be demonstrated immediately.
+
+| Project | Partner | Team Size |
+|---|---|---|
+| Healthcare Portal | Medi Care | 3 |
+| Government Services App | My Gov | 4 |
+| E-Commerce Platform | Tank Stream Design | 3 |
+
+---
+
+## Auto-Assignment
+
+Log in as **Garry (Teacher)** → go to **Students** → select **2026 / Trimester 1** → click **Run Auto-Assignment**.
+
+The algorithm:
+1. Resets any existing assignments for the selected offering
+2. Sorts students by GPA (descending)
+3. For each student (highest GPA first), assigns them to their first-choice project that still has capacity
+4. Skips to next preference if a project is full
+
+Expected result for 2026 T1:
+
+| Student | GPA | Assigned To |
+|---|---|---|
+| Alice | 6.5 | Healthcare Portal |
+| Emma | 6.0 | Government Services App |
+| Tom | 5.5 | Healthcare Portal |
+| Carol | 5.0 | Healthcare Portal |
+| Bob | 4.0 | Government Services App |
+| David | 3.5 | E-Commerce Platform |
+
+---
+
+## Database Schema
+
+```
+users               — auth table (usertype: student | industry_partner | teacher)
+students            — student profiles (gpa, roles[])
+teachers            — teacher profiles
+industry_partners   — partner profiles (approved boolean)
+projects            — project listings (title, description, team_size, trimester, year)
+student_project     — applications pivot (justification, assigned boolean)
+project_files       — uploaded files/images per project
+```
+
+---
+
+## Key Routes
+
+| Method | URI | Description |
+|---|---|---|
+| GET | `/` | Industry partners home |
+| GET | `/projects` | Project listing |
+| GET | `/projects/{id}/apply` | Apply to a project (student) |
+| GET | `/students` | Student list (teacher) |
+| POST | `/auto-assign` | Run auto-assignment (teacher) |
+| GET | `/industry-partners/approval-menu` | Approve partners (teacher) |
