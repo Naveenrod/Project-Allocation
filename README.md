@@ -1,8 +1,12 @@
-# WIL Project Allocation System
+# Work Integrated Learning Project (WIL) Allocation System
 
 A Laravel web application for managing Work Integrated Learning (WIL) project allocations between students, industry partners, and teachers at Griffith University.
 
  <img width="1417" height="887" alt="image" src="https://github.com/user-attachments/assets/a283dcf7-0b3b-4a6a-b8ad-39bca9870937" />
+ <img width="1417" height="887" alt="image" src="https://github.com/user-attachments/assets/267b8c56-8f36-44fc-bc34-04d2ea5bd360" />
+ <img width="1417" height="887" alt="image" src="https://github.com/user-attachments/assets/766a9750-553a-4195-8a97-0dc87d5a1ccb" />
+
+
 
 
 ---
