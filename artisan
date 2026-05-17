@@ -3,6 +3,12 @@
 
 define('LARAVEL_START', microtime(true));
 
+error_reporting(E_ALL & ~E_DEPRECATED & ~E_USER_DEPRECATED);
+
+// Pre-load Logger before HandleExceptions bootstrapper resets error_reporting(-1),
+// preventing a nested deprecation warning when the error handler first instantiates LogManager.
+class_exists(\Illuminate\Log\Logger::class);
+
 /*
 |--------------------------------------------------------------------------
 | Register The Auto Loader
